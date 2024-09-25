@@ -1,0 +1,38 @@
+version: "3.91"
+
+services:
+    apache:
+        image: httpd:2.4
+        container_name: apache_web_server
+        volumes:
+            - ./src:/usr/local/apache2/htdocs/
+        ports:
+            - "8080:80" # 映射 Apache 伺服器端口
+
+    mysql:
+        image: mysql:8.0
+        container_name: apache_mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: rootpassword
+            MYSQL_DATABASE: web_db
+            MYSQL_USER: admin
+            MYSQL_PASSWORD: adminpassword
+        volumes:
+            - mysql_data:/var/lib/mysql
+        ports:
+            - "3306:3306"
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: apache_phpmyadmin
+        environment:
+            PMA_HOST: mysql
+            MYSQL_ROOT_PASSWORD: rootpassword
+        ports:
+            - "8081:80"
+        depends_on:
+            - mysql
+
+volumes:
+    mysql_data:
